@@ -233,7 +233,7 @@ export function MovieCommentSection({ movieId }: { movieId: number }) {
       setComments([]);
       throw error;
     } else if (data) {
-      setComments(data as any);
+      setComments(data as CommentWithProfile[]);
     }
     setLoadingComments(false);
   }, [movieId, supabase]);
@@ -256,7 +256,7 @@ export function MovieCommentSection({ movieId }: { movieId: number }) {
       toast.error("Gửi bình luận thất bại", { description: error.message });
     } else if (insertedComment) {
       toast.success("Bình luận đã được gửi!");
-      setComments([insertedComment as any, ...comments]);
+      setComments([insertedComment as CommentWithProfile, ...comments]);
       setNewComment("");
     }
     setIsSubmitting(false);
