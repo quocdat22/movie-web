@@ -27,6 +27,9 @@ const Header: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const { user, loading, signOut } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarFilePath, setAvatarFilePath] = useState<string | null>(null);
+  const [avatarSignedUrl, setAvatarSignedUrl] = useState<string | null>(null);
+  const [signedUrlLoading, setSignedUrlLoading] = useState(false);
   const router = useRouter();
 
   // Fetch avatar URL when user data is available
@@ -35,13 +38,39 @@ const Header: React.FC = () => {
       const supabase = createClient();
       const fetchAvatar = async () => {
           const { data } = await supabase.from('profiles').select('avatar_url').eq('id', user.id).single();
-          setAvatarUrl(data?.avatar_url);
+          if (data?.avatar_url) {
+            setAvatarFilePath(data.avatar_url);
+          } else {
+            setAvatarFilePath(null);
+            setAvatarSignedUrl(null);
+          }
       }
       fetchAvatar();
     } else {
-        setAvatarUrl(null); // Clear avatar when user logs out
+        setAvatarFilePath(null);
+        setAvatarSignedUrl(null);
     }
   }, [user]);
+
+  // Lấy signed URL khi avatarFilePath thay đổi
+  useEffect(() => {
+    const getSignedUrl = async () => {
+      if (!avatarFilePath) {
+        setAvatarSignedUrl(null);
+        return;
+      }
+      setSignedUrlLoading(true);
+      const supabase = createClient();
+      const { data, error } = await supabase.storage.from('avatars').createSignedUrl(avatarFilePath, 60 * 60);
+      if (error || !data?.signedUrl) {
+        setAvatarSignedUrl(null);
+      } else {
+        setAvatarSignedUrl(data.signedUrl);
+      }
+      setSignedUrlLoading(false);
+    };
+    getSignedUrl();
+  }, [avatarFilePath]);
 
   useEffect(() => {
     setMounted(true);
@@ -51,7 +80,7 @@ const Header: React.FC = () => {
     <header className="w-full h-16 flex items-center justify-between px-4 border-b sticky top-0 z-50 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-md shadow-sm">
       {/* Left: Logo */}
       <div className="flex items-center">
-        <span className="text-xl font-bold tracking-tight text-primary">🎬 MovieApp</span>
+        <span className="text-xl font-bold tracking-tight text-primary">MovieApp</span>
       </div>
       {/* Center: Main nav */}
       <nav className="flex-1 flex justify-center gap-2">
@@ -86,7 +115,7 @@ const Header: React.FC = () => {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-9 w-9">
-                        <AvatarImage src={avatarUrl || ''} alt={user.email || ''} />
+                        <AvatarImage src={signedUrlLoading ? '/no-avatar.png' : (avatarSignedUrl || '/no-avatar.png')} alt={user.email || ''} />
                         <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
                     </Avatar>
                 </Button>
