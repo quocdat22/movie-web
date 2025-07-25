@@ -96,9 +96,9 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
     const MovieCast = () => (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-2xl font-bold mb-4">Diễn viên</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
+            <div className="flex flex-row gap-4 overflow-x-auto whitespace-nowrap pb-2 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-zinc-900">
                 {movie.credits.cast.slice(0, 14).map((member: CastMember) => (
-                    <div key={member.cast_id} className="text-center">
+                    <div key={member.cast_id} className="flex-shrink-0 w-24 text-center">
                         <div className="w-24 h-24 rounded-full mx-auto mb-2 bg-zinc-800 relative overflow-hidden">
                             <Image
                                 src={member.profile_path ? `https://image.tmdb.org/t/p/w185${member.profile_path}` : '/no-avatar.png'}
@@ -108,8 +108,8 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
                                 sizes="96px"
                             />
                         </div>
-                        <p className="font-semibold text-sm">{member.name}</p>
-                        <p className="text-xs text-zinc-400">{member.character}</p>
+                        <p className="font-semibold text-sm truncate">{member.name}</p>
+                        <p className="text-xs text-zinc-400 truncate">{member.character}</p>
                     </div>
                 ))}
             </div>
