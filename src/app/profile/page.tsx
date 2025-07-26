@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
@@ -104,7 +105,6 @@ export default function ProfilePage() {
             }
             const fileExt = file.name.split('.').pop();
             const fileName = `${user.id}_${Date.now()}.${fileExt}`;
-            const filePath = `avatars/${fileName}`;
             const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file, {
                 upsert: true,
                 contentType: file.type,
@@ -114,7 +114,7 @@ export default function ProfilePage() {
                 setAvatarUploading(false);
                 return;
             }
-            // Lưu filePath vào profiles.avatar_url
+            // Lưu fileName vào profiles.avatar_url
             const { error: updateError } = await supabase.from('profiles').update({
                 avatar_url: fileName,
                 updated_at: new Date().toISOString(),
@@ -125,7 +125,7 @@ export default function ProfilePage() {
                 setMessage('Avatar uploaded & profile updated!');
                 setAvatarFilePath(fileName); // Cập nhật state để lấy signed url mới
             }
-        } catch (err) {
+        } catch {
             setMessage('Unexpected error uploading avatar.');
         }
         setAvatarUploading(false);
@@ -140,12 +140,15 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
             <div className="flex flex-col items-center mb-6">
                 <div className="relative group">
-                    <img
+                    <Image
                         src={signedUrlLoading ? '/no-avatar.png' : (avatarSignedUrl || '/no-avatar.png')}
                         alt="Avatar"
+                        width={112}
+                        height={112}
                         className="w-28 h-28 rounded-full object-cover border shadow"
                         onClick={() => document.getElementById('avatarFile')?.click()}
                         style={{ cursor: 'pointer' }}
+                        priority
                     />
                     <input
                         id="avatarFile"

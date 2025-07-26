@@ -31,18 +31,18 @@ const MovieRating: React.FC<MovieRatingProps> = ({ initialRating, voteCount, mov
     setError(null);
     if (user) {
       setLoadingUserRating(true);
-      const { data, error: fetchError } = await supabase
+      const { data } = await supabase
         .from('movie_rating')
         .select('rating')
         .eq('movie_id', movieId)
         .eq('user_id', user.id)
         .single();
-      if (!fetchError && data && typeof data.rating === 'number') {
-        setSelectedRating(data.rating);
-        setUserRated(data.rating);
-      } else {
+      if (!data || typeof data.rating !== 'number') {
         setSelectedRating(null);
         setUserRated(null);
+      } else {
+        setSelectedRating(data.rating);
+        setUserRated(data.rating);
       }
       setLoadingUserRating(false);
     } else {
@@ -100,7 +100,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({ initialRating, voteCount, mov
         setUserRated(selectedRating);
         if (onRate) onRate(selectedRating);
       }
-    } catch (e) {
+    } catch {
       setError('Có lỗi xảy ra, vui lòng thử lại.');
     } finally {
       setIsSubmitting(false);

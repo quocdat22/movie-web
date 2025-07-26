@@ -26,7 +26,6 @@ const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { user, loading, signOut } = useAuth();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarFilePath, setAvatarFilePath] = useState<string | null>(null);
   const [avatarSignedUrl, setAvatarSignedUrl] = useState<string | null>(null);
   const [signedUrlLoading, setSignedUrlLoading] = useState(false);

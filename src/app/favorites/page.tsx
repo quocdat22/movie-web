@@ -6,6 +6,8 @@ import { User } from '@supabase/supabase-js';
 import MovieCard from '@/components/MovieCard';
 import { Button } from '@/components/ui/button';
 import { AuthModal } from '@/components/AuthModal';
+import { Trash } from "lucide-react";
+import { toast } from "sonner";
 
 interface FavoriteMovie {
     id: number;
@@ -43,7 +45,7 @@ export default function FavoritesPage() {
                     // Map the data to fit the MovieCard props
                     const formattedFavorites = data.map(fav => ({
                         ...fav,
-                        id: fav.movie_id, // Important: Use movie_id for the card's key/link
+                        // id: fav.id, // giữ nguyên id của bản ghi favorites
                         title: fav.movie_title,
                         poster_path: fav.movie_poster_path,
                         vote_average: 0, // Default value
@@ -75,6 +77,23 @@ export default function FavoritesPage() {
 
     }, [supabase]);
 
+    const handleDeleteFavorite = async (favoriteId: number) => {
+        setLoading(true);
+        const { error } = await supabase
+            .from('favorites')
+            .delete()
+            .eq('id', favoriteId);
+
+        if (error) {
+            console.error('Error deleting favorite:', error);
+            toast.error('Xóa phim yêu thích thất bại!');
+        } else {
+            setFavorites((prev) => prev.filter((fav) => fav.id !== favoriteId));
+            toast.success('Đã xóa phim khỏi danh sách yêu thích!');
+        }
+        setLoading(false);
+    };
+
     if (loading) {
         return <div className="container mx-auto py-8 text-center">Loading your favorites...</div>;
     }
@@ -97,7 +116,17 @@ export default function FavoritesPage() {
             {favorites.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                     {favorites.map((movie) => (
-                        <MovieCard key={movie.id} movie={movie} />
+                        <div key={movie.id} className="relative group">
+                            <button
+                                className="absolute top-2 right-2 z-10 p-1 rounded-full bg-white/80 hover:bg-red-500 hover:text-white transition-colors shadow group-hover:opacity-100 opacity-70"
+                                title="Xóa khỏi yêu thích"
+                                type="button"
+                                onClick={() => handleDeleteFavorite(movie.id)}
+                            >
+                                <Trash size={18} />
+                            </button>
+                            <MovieCard movie={movie} />
+                        </div>
                     ))}
                 </div>
             ) : (

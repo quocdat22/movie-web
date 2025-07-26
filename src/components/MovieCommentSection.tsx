@@ -250,14 +250,41 @@ export function MovieCommentSection({ movieId }: { movieId: number }) {
     e.preventDefault();
     if (!user || !newComment.trim()) return;
     setIsSubmitting(true);
-    const { data: insertedComment, error } = await supabase.from("comments").insert({ content: newComment, user_id: user.id, movie_id: movieId }).select("*, profiles(full_name, avatar_url)").single();
-    if (error) {
-      console.error("Error posting comment:", error);
-      toast.error("Gửi bình luận thất bại", { description: error.message });
-    } else if (insertedComment) {
-      toast.success("Bình luận đã được gửi!");
-      setComments([insertedComment as CommentWithProfile, ...comments]);
-      setNewComment("");
+    try {
+      // 1. Gửi nội dung comment đến API phân tích cảm xúc
+      const sentimentRes = await fetch('https://sentiment-api-ov5h.onrender.com/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: newComment })
+      });
+      if (!sentimentRes.ok) throw new Error('Không thể phân tích cảm xúc');
+      const sentimentData = await sentimentRes.json();
+      const sentiment = sentimentData.sentiment || null;
+
+      // 2. Lưu comment vào Supabase kèm sentiment
+      const { data: insertedComment, error } = await supabase.from("comments").insert({ content: newComment, user_id: user.id, movie_id: movieId, sentiment }).select("*, profiles(full_name, avatar_url)").single();
+      if (error) {
+        console.error("Error posting comment:", error);
+        toast.error("Gửi bình luận thất bại", { description: error.message });
+      } else if (insertedComment) {
+        toast.success("Bình luận đã được gửi!");
+        setComments([insertedComment as CommentWithProfile, ...comments]);
+        setNewComment("");
+      }
+    } catch (err: unknown) {
+      console.error("Error in sentiment analysis or posting comment:", err);
+      let message = "";
+      if (typeof err === "object" && err !== null && "message" in err) {
+        const maybeError = err as { message?: unknown };
+        if (typeof maybeError.message === "string") {
+          message = maybeError.message;
+        } else {
+          message = "Đã xảy ra lỗi không xác định.";
+        }
+      } else {
+        message = "Đã xảy ra lỗi không xác định.";
+      }
+      toast.error("Gửi bình luận thất bại", { description: message });
     }
     setIsSubmitting(false);
   };

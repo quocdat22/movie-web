@@ -29,7 +29,8 @@ async function getMovieData(id: string) {
     const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
     const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`);
     if (!res.ok) {
-        throw new Error('Failed to fetch movie data');
+        console.warn('Failed to fetch movie data');
+        return null;
     }
     return res.json();
 }
@@ -37,6 +38,15 @@ async function getMovieData(id: string) {
 export default async function MovieDetailPage({ params }: MovieDetailPageProps) {
     const { id } = await params;
     const movie = await getMovieData(id);
+
+    if (!movie) {
+        return (
+            <div className="container mx-auto px-4 py-16 text-center">
+                <h1 className="text-2xl font-bold mb-4">Không thể tải dữ liệu phim</h1>
+                <p className="text-zinc-400">Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.</p>
+            </div>
+        );
+    }
 
     const MovieBanner = () => (
         <div className="relative h-64 md:h-96">
