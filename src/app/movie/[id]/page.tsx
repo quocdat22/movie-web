@@ -4,6 +4,7 @@ import { WatchTrailerButton } from '@/components/WatchTrailerButton';
 import { FavoriteButton } from '@/components/FavoriteButton';
 import { MovieCommentSection } from '@/components/MovieCommentSection';
 import MovieRating from '@/components/MovieRating';
+import { RecommendedMovies } from '@/components/RecommendedMovies';
 
 interface Genre {
     id: number;
@@ -27,17 +28,40 @@ interface MovieDetailPageProps {
 
 async function getMovieData(id: string) {
     const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-    const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`);
-    if (!res.ok) {
-        console.warn('Failed to fetch movie data');
+    try {
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`);
+        if (!res.ok) {
+            console.error(`Failed to fetch movie data: ${res.status} ${res.statusText}`);
+            return null;
+        }
+        return res.json();
+    } catch (error) {
+        console.error('Error fetching movie data:', error);
         return null;
     }
-    return res.json();
+}
+
+async function getRecommendedMovies(movieId: string) {
+    try {
+        const res = await fetch(`https://recommend-movie-content-based.onrender.com/recommend?movie_id=${movieId}&top_n=10`);
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error(`Failed to fetch recommended movies: ${res.status} ${res.statusText}`);
+            return [];
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching recommended movies:', error);
+        return [];
+    }
 }
 
 export default async function MovieDetailPage({ params }: MovieDetailPageProps) {
     const { id } = await params;
     const movie = await getMovieData(id);
+    const recommendedMovies = await getRecommendedMovies(id);
 
     if (!movie) {
         return (
@@ -130,6 +154,7 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
         <div>
             <MovieBanner />
             <MovieInfo />
+            <RecommendedMovies recommendedMovies={recommendedMovies} />
             <MovieCast />
             <MovieCommentSection movieId={movie.id} />
         </div>
