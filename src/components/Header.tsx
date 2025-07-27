@@ -8,6 +8,8 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
+import { Input } from "./ui/input"; // Import Input component
+import { Search } from "lucide-react"; // Import Search icon
 
 import {
   DropdownMenu,
@@ -30,6 +32,7 @@ const Header: React.FC = () => {
   const [avatarSignedUrl, setAvatarSignedUrl] = useState<string | null>(null);
   const [signedUrlLoading, setSignedUrlLoading] = useState(false);
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(""); // Add state for search query
 
   // Fetch avatar URL when user data is available
   useEffect(() => {
@@ -75,6 +78,12 @@ const Header: React.FC = () => {
     setMounted(true);
   }, []);
 
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <header className="w-full h-16 flex items-center justify-between px-4 border-b sticky top-0 z-50 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-md shadow-sm">
       {/* Left: Logo */}
@@ -92,6 +101,22 @@ const Header: React.FC = () => {
       </nav>
       {/* Right: Toggle + Login/User info */}
       <div className="flex items-center gap-3">
+        {/* Search Input */}
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search movies..."
+            className="pl-9 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
+          />
+        </div>
         {/* Theme Toggle */}
         <button
           className="rounded-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition w-9 h-9 flex items-center justify-center"
