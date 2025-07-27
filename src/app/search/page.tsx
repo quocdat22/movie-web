@@ -26,7 +26,7 @@ const SearchPage: React.FC = () => {
         return;
       }
 
-      const supabase = createClient();
+      // const supabase = createClient(); // Removed unused variable
       try {
         // Fetch from TMDB API
         const API_URL = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(searchQuery)}`;
@@ -52,7 +52,7 @@ const SearchPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">
-        Search Results for "{searchQuery}"
+        Search Results for &quot;{searchQuery}&quot;
       </h1>
 
       {loading ? (
@@ -71,7 +71,7 @@ const SearchPage: React.FC = () => {
         </div>
       ) : (
         <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-          No movies found matching "{searchQuery}".
+          No movies found matching &quot;{searchQuery}&quot;.
         </p>
       )}
     </div>
