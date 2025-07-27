@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import MovieCard from "@/components/MovieCard";
 import { createClient } from "@/lib/supabase/client";
-    import { Movie } from "@/lib/types"; // Corrected import path for Movie type
+import { Movie } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY; // Declare API_KEY here
 
-const SearchPage: React.FC = () => {
+const SearchContent: React.FC = () => {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("query");
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -26,7 +26,6 @@ const SearchPage: React.FC = () => {
         return;
       }
 
-      // const supabase = createClient(); // Removed unused variable
       try {
         // Fetch from TMDB API
         const API_URL = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(searchQuery)}`;
@@ -75,6 +74,14 @@ const SearchPage: React.FC = () => {
         </p>
       )}
     </div>
+  );
+};
+
+const SearchPage: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading search results...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 };
 
