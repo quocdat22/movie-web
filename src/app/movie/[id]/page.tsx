@@ -73,12 +73,12 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
     }
 
     const MovieBanner = () => (
-        <div className="relative h-64 md:h-96">
+        <div className="relative h-80 md:h-[32rem] pt-20">
             <Image
                 src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
                 alt={movie.title}
                 fill
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-top"
                 priority
                 sizes="100vw"
             />
@@ -87,7 +87,7 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
     );
 
     const MovieInfo = () => (
-        <div className="container mx-auto px-4 -mt-16 md:-mt-24 pb-8 relative z-10">
+        <div className="container mx-auto px-4 pb-8 relative z-10">
             <div className="md:flex gap-8">
                 <div className="flex-shrink-0 w-48 md:w-64 mx-auto md:mx-0 relative h-72 md:h-96">
                     <Image
@@ -152,8 +152,14 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
 
     return (
         <div>
-            <MovieBanner />
-            <MovieInfo />
+            <div className="relative">
+                <MovieBanner />
+                <div className="absolute inset-x-0 bottom-0 top-1/2 flex items-end">
+                    <div className="w-full bg-gradient-to-t from-zinc-950/80 via-zinc-950/60 to-transparent px-4 pb-8 pt-8 md:pt-12">
+                        <MovieInfo />
+                    </div>
+                </div>
+            </div>
             <RecommendedMovies recommendedMovies={recommendedMovies} />
             <MovieCast />
             <MovieCommentSection movieId={movie.id} />

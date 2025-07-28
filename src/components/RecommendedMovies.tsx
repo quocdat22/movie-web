@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface RecommendedMovie {
     id: number;
@@ -26,7 +27,7 @@ export const RecommendedMovies = ({ recommendedMovies }: RecommendedMoviesProps)
             <h2 className="text-2xl font-bold mb-4">Phim gợi ý</h2>
             <div className="flex flex-row gap-4 overflow-x-auto whitespace-nowrap pb-2 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-zinc-900">
                 {recommendedMovies.map((movie: RecommendedMovie) => (
-                    <div key={movie.id} className="flex-shrink-0 w-32 text-center">
+                    <Link key={movie.id} href={`/movie/${movie.id}`} className="flex-shrink-0 w-32 text-center">
                         <div className="w-32 h-48 rounded-lg mx-auto mb-2 bg-zinc-800 relative overflow-hidden">
                             <Image
                                 src={movie.poster_url}
@@ -37,7 +38,7 @@ export const RecommendedMovies = ({ recommendedMovies }: RecommendedMoviesProps)
                             />
                         </div>
                         <p className="font-semibold text-sm truncate text-white">{movie.title}</p>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>
