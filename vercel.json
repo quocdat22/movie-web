@@ -1,0 +1,10 @@
+{
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": "https://movie-web-seven-sage.vercel.app"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SITE_URL": "https://movie-web-seven-sage.vercel.app"
+    }
+  }
+}

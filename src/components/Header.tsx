@@ -98,6 +98,9 @@ const Header: React.FC = () => {
         <Link href="/favorites" className="text-lg font-semibold px-4 py-2 hover:text-primary transition">
           Favorites
         </Link>
+        <Link href="/recommended" className="text-lg font-semibold px-4 py-2 hover:text-primary transition">
+          Phim gợi ý
+        </Link>
       </nav>
       {/* Right: Toggle + Login/User info */}
       <div className="flex items-center gap-3">
@@ -172,4 +175,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header; 
+export default Header;

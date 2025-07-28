@@ -80,11 +80,18 @@ const SignUpForm: React.FC<{ setOpen: (open: boolean) => void }> = ({ setOpen })
     e.preventDefault();
     setError("");
     setMessage("");
+    // Sử dụng URL production từ biến môi trường khi không phải localhost, ngược lại sử dụng origin hiện tại
+    const isProduction = !location.origin.includes('localhost');
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://movie-web-seven-sage.vercel.app';
+    const redirectUrl = isProduction
+      ? `${siteUrl}/auth/callback`
+      : `${location.origin}/auth/callback`;
+      
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
+        emailRedirectTo: redirectUrl,
       },
     });
 
@@ -160,4 +167,4 @@ export const AuthModal: React.FC<AuthModalProps> = ({ children }) => {
       </DialogContent>
     </Dialog>
   );
-}; 
+};
