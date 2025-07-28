@@ -154,15 +154,18 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
         <div>
             <div className="relative">
                 <MovieBanner />
-                <div className="absolute inset-x-0 bottom-0 top-1/2 flex items-end">
+                <div className="absolute inset-x-0 bottom-0 top-1/2 flex items-start">
                     <div className="w-full bg-gradient-to-t from-zinc-950/80 via-zinc-950/60 to-transparent px-4 pb-8 pt-8 md:pt-12">
-                        <MovieInfo />
+                        <div className="mt-16 md:mt-20">
+                            <MovieInfo />
+                            <RecommendedMovies recommendedMovies={recommendedMovies} />
+                            <MovieCast />
+                            <MovieCommentSection movieId={movie.id} />
+                        </div>
                     </div>
                 </div>
             </div>
-            <RecommendedMovies recommendedMovies={recommendedMovies} />
-            <MovieCast />
-            <MovieCommentSection movieId={movie.id} />
+            
         </div>
     );
 } 
