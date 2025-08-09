@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "./ui/input"; // Import Input component
-import { Search } from "lucide-react"; // Import Search icon
+import { Search, Shield } from "lucide-react"; // Import Search and Shield icons
+import { isUserAdminClient } from "@/lib/auth";
 
 import {
   DropdownMenu,
@@ -31,6 +32,7 @@ const Header: React.FC = () => {
   const [avatarFilePath, setAvatarFilePath] = useState<string | null>(null);
   const [avatarSignedUrl, setAvatarSignedUrl] = useState<string | null>(null);
   const [signedUrlLoading, setSignedUrlLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState(""); // Add state for search query
 
@@ -51,6 +53,19 @@ const Header: React.FC = () => {
     } else {
         setAvatarFilePath(null);
         setAvatarSignedUrl(null);
+    }
+  }, [user]);
+
+  // Check if user is admin
+  useEffect(() => {
+    if (user) {
+      const checkAdminStatus = async () => {
+        const adminStatus = await isUserAdminClient();
+        setIsAdmin(adminStatus);
+      };
+      checkAdminStatus();
+    } else {
+      setIsAdmin(false);
     }
   }, [user]);
 
@@ -101,6 +116,12 @@ const Header: React.FC = () => {
         <Link href="/recommended" className="text-lg font-semibold px-4 py-2 hover:text-primary transition">
           Phim gợi ý
         </Link>
+        {isAdmin && (
+          <Link href="/admin" className="text-lg font-semibold px-4 py-2 hover:text-primary transition flex items-center gap-1">
+            <Shield className="h-4 w-4" />
+            Admin
+          </Link>
+        )}
       </nav>
       {/* Right: Toggle + Login/User info */}
       <div className="flex items-center gap-3">
@@ -160,6 +181,12 @@ const Header: React.FC = () => {
               <DropdownMenuItem onClick={() => router.push('/profile')}>
                 Profile
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => router.push('/admin')}>
+                  <Shield className="mr-2 h-4 w-4" />
+                  Admin Dashboard
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={signOut}>
                 Log out
               </DropdownMenuItem>

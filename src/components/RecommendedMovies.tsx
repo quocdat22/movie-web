@@ -5,7 +5,7 @@ import Link from 'next/link';
 interface RecommendedMovie {
     id: number;
     title: string;
-    poster_url: string;
+    poster_path: string;
 }
 
 interface RecommendedMoviesProps {
@@ -30,7 +30,7 @@ export const RecommendedMovies = ({ recommendedMovies }: RecommendedMoviesProps)
                     <Link key={movie.id} href={`/movie/${movie.id}`} className="flex-shrink-0 w-32 text-center">
                         <div className="w-32 h-48 rounded-lg mx-auto mb-2 bg-zinc-800 relative overflow-hidden">
                             <Image
-                                src={movie.poster_url}
+                                src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/no-image.png'}
                                 alt={movie.title}
                                 fill
                                 className="object-cover rounded-lg"

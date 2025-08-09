@@ -72,6 +72,7 @@ const LoginForm: React.FC<{ setOpen: (open: boolean) => void }> = ({ setOpen }) 
 const SignUpForm: React.FC<{ setOpen: (open: boolean) => void }> = ({ setOpen }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const supabase = createClient();
@@ -80,6 +81,13 @@ const SignUpForm: React.FC<{ setOpen: (open: boolean) => void }> = ({ setOpen })
     e.preventDefault();
     setError("");
     setMessage("");
+    
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setError("Mật khẩu và xác nhận mật khẩu không khớp");
+      return;
+    }
+    
     // Sử dụng URL production từ biến môi trường khi không phải localhost, ngược lại sử dụng origin hiện tại
     const isProduction = !location.origin.includes('localhost');
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://movie-web-seven-sage.vercel.app';
@@ -123,6 +131,16 @@ const SignUpForm: React.FC<{ setOpen: (open: boolean) => void }> = ({ setOpen })
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="signup-confirm-password">Xác nhận mật khẩu</Label>
+        <Input
+          id="signup-confirm-password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
       </div>
